@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>朋友圈</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <h1>朋友圈</h1>
+            <div class="login-form">
+                <input type="text" id="loginUsername" placeholder="用户名" required>
+                <input type="password" id="loginPassword" placeholder="密码" required>
+                <button onclick="login()">登录</button>
+                <p>还没有账号？<a href="#" onclick="showRegister()">立即注册</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册页面 -->
+    <div id="registerPage" class="page">
+        <div class="register-container">
+            <h1>注册账号</h1>
+            <div class="register-form">
+                <input type="text" id="registerUsername" placeholder="用户名" required>
+                <input type="password" id="registerPassword" placeholder="密码" required>
+                <input type="password" id="confirmPassword" placeholder="确认密码" required>
+                <button onclick="register()">注册</button>
+                <p>已有账号？<a href="#" onclick="showLogin()">立即登录</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主应用页面 -->
+    <div id="mainPage" class="page">
+        <!-- 顶部导航（仅朋友圈页面显示） -->
+        <div class="top-nav">
+            <h2 id="currentCircle">我的朋友圈</h2>
+            <div class="top-actions">
+                <button class="add-btn" onclick="showAddOptions()">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 圈子标签栏（仅朋友圈页面显示） -->
+        <div class="circles-tabs">
+            <div class="tab active" onclick="switchCircle('all')">全部</div>
+            <!-- 动态添加的圈子标签 -->
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <div id="postsContainer" class="posts-container">
+                <!-- 动态添加的朋友圈内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 发布朋友圈模态框 -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>发布朋友圈</h3>
+                <span class="close" onclick="closeModal('postModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <textarea id="postContent" placeholder="分享你的想法..."></textarea>
+                <div class="media-upload">
+                    <label for="mediaInput" class="upload-btn">
+                        <i class="fas fa-image"></i> 添加图片/视频
+                    </label>
+                    <input type="file" id="mediaInput" accept="image/*,video/*" multiple>
+                </div>
+                <div id="mediaPreview" class="media-preview"></div>
+                <div class="circle-selector">
+                    <label>选择圈子：</label>
+                    <select id="postCircle">
+                        <!-- 动态添加圈子选项 -->
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="publishPost()">发布</button>
+                <button onclick="closeModal('postModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建圈子模态框 -->
+    <div id="circleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>创建新圈子</h3>
+                <span class="close" onclick="closeModal('circleModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="circleName" placeholder="圈子名称">
+                <div class="friends-selector">
+                    <label>选择朋友：</label>
+                    <div id="friendsList" class="friends-list">
+                        <!-- 动态添加朋友列表 -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="createCircle()">创建</button>
+                <button onclick="closeModal('circleModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加选项模态框 -->
+    <div id="addOptionsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择操作</h3>
+                <span class="close" onclick="closeModal('addOptionsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <button class="option-btn" onclick="showPostModal()">
+                    <i class="fas fa-edit"></i>
+                    发布朋友圈
+                </button>
+                <button class="option-btn" onclick="showCircleModal()">
+                    <i class="fas fa-plus-circle"></i>
+                    创建新圈子
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 朋友页面 -->
+    <div id="friendsPage" class="page">
+        <div class="page-header">
+            <h2>我的朋友</h2>
+        </div>
+        <div class="friends-container">
+            <h3 style="margin-bottom:10px;">已添加的朋友</h3>
+            <div id="friendsListContainer"></div>
+            <h3 style="margin:20px 0 10px;">添加朋友</h3>
+            <div id="addFriendsListContainer"></div>
+        </div>
+    </div>
+
+    <!-- 个人资料页面 -->
+    <div id="profilePage" class="page">
+        <div class="page-header">
+            <h2>我的资料</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-info">
+                <h3>用户名：<span id="profileUsername"></span></h3>
+                <p>注册时间：<span id="profileRegisterTime"></span></p>
+                <p>我的圈子：<span id="profileCircles"></span></p>
+                <p>朋友圈数量：<span id="profilePosts"></span></p>
+            </div>
+            <button onclick="cleanupStorage()" class="cleanup-btn">清理存储空间</button>
+            <button onclick="logout()" class="logout-btn">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 底部导航栏（所有页面固定显示） -->
+    <div id="bottomNav" class="bottom-nav" style="display:none;">
+        <div class="nav-item active" onclick="switchTab('moments')">
+            <i class="fas fa-home"></i>
+            <span>朋友圈</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('friends')">
+            <i class="fas fa-users"></i>
+            <span>我的朋友</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile')">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
